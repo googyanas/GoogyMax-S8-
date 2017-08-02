@@ -974,16 +974,6 @@ void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
 	if (!sk && hash_location) {
 		/*
 		 * active side is lost. Try to find listening socket through
-static void tcp_v6_restore_cb(struct sk_buff *skb)
-{
-	/* We need to move header back to the beginning if xfrm6_policy_check()
-	 * and tcp_v6_fill_cb() are going to be called again.
-	 * ip6_datagram_recv_specific_ctl() also expects IP6CB to be there.
-	 */
-	memmove(IP6CB(skb), &TCP_SKB_CB(skb)->header.h6,
-		sizeof(struct inet6_skb_parm));
-}
-
 		 * source port, and then find md5 key through listening socket.
 		 * we are not loose security here:
 		 * Incoming packet is checked with md5 hash with finding key,
@@ -1050,6 +1040,16 @@ static void tcp_v6_send_ack(const struct sock *sk, struct sk_buff *skb, u32 seq,
 			     tclass, label);
 }
 #endif
+
+static void tcp_v6_restore_cb(struct sk_buff *skb)
+{
+	/* We need to move header back to the beginning if xfrm6_policy_check()
+	 * and tcp_v6_fill_cb() are going to be called again.
+	 * ip6_datagram_recv_specific_ctl() also expects IP6CB to be there.
+	 */
+	memmove(IP6CB(skb), &TCP_SKB_CB(skb)->header.h6,
+		sizeof(struct inet6_skb_parm));
+}
 
 static void tcp_v6_timewait_ack(struct sock *sk, struct sk_buff *skb)
 {
