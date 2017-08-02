@@ -1965,6 +1965,10 @@ static int dwc3_gadget_pullup(struct usb_gadget *g, int is_on)
 		 * DP/DM controls by S/W are needed at this point.
 		 */
 		if (dwc->is_not_vbus_pad) {
+	if (usb_endpoint_xfer_isoc(dep->endpoint.desc))
+		if ((event->status & DEPEVT_STATUS_IOC) &&
+				(trb->ctrl & DWC3_TRB_CTRL_IOC))
+			return 0;
 			phy_set(dwc->usb2_generic_phy, SET_DPPULLUP_DISABLE, NULL);
 			phy_set(dwc->usb3_generic_phy, SET_DPPULLUP_DISABLE, NULL);
 		}
