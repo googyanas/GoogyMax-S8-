@@ -1372,8 +1372,11 @@ static void binder_transaction_buffer_release(struct binder_proc *proc,
 		} break;
 		case BINDER_TYPE_HANDLE:
 		case BINDER_TYPE_WEAK_HANDLE: {
-			struct binder_ref *ref = binder_get_ref(proc, fp->handle,
-						fp->type == BINDER_TYPE_HANDLE);
+			struct binder_ref *ref;
+
+			ref = binder_get_ref(proc, fp->handle,
+					     fp->type == BINDER_TYPE_HANDLE);
+
 			if (ref == NULL) {
 				pr_err("transaction release %d bad handle %d\n",
 				 debug_id, fp->handle);
@@ -1665,7 +1668,9 @@ static void binder_transaction(struct binder_proc *proc,
 			else
 				fp->type = BINDER_TYPE_WEAK_HANDLE;
 			fp->binder = 0;
+			fp->binder = 0;
 			fp->handle = ref->desc;
+			fp->cookie = 0;
 			fp->cookie = 0;
 			binder_inc_ref(ref, fp->type == BINDER_TYPE_HANDLE,
 				       &thread->todo);
@@ -1678,8 +1683,11 @@ static void binder_transaction(struct binder_proc *proc,
 		} break;
 		case BINDER_TYPE_HANDLE:
 		case BINDER_TYPE_WEAK_HANDLE: {
-			struct binder_ref *ref = binder_get_ref(proc, fp->handle,
-						fp->type == BINDER_TYPE_HANDLE);
+			struct binder_ref *ref;
+
+			ref = binder_get_ref(proc, fp->handle,
+					     fp->type == BINDER_TYPE_HANDLE);
+
 			if (ref == NULL) {
 				binder_user_error("%d:%d got transaction with invalid handle, %d\n",
 						proc->pid,
@@ -1714,7 +1722,9 @@ static void binder_transaction(struct binder_proc *proc,
 					goto err_binder_get_ref_for_node_failed;
 				}
 				fp->binder = 0;
+				fp->binder = 0;
 				fp->handle = new_ref->desc;
+				fp->cookie = 0;
 				fp->cookie = 0;
 				binder_inc_ref(new_ref, fp->type == BINDER_TYPE_HANDLE, NULL);
 				trace_binder_transaction_ref_to_ref(t, ref,
@@ -1768,6 +1778,7 @@ static void binder_transaction(struct binder_proc *proc,
 			trace_binder_transaction_fd(t, fp->handle, target_fd);
 			binder_debug(BINDER_DEBUG_TRANSACTION,
 				     "        fd %d -> %d\n", fp->handle, target_fd);
+			fp->binder = 0;
 			/* TODO: fput? */
 			fp->binder = 0;
 			fp->handle = target_fd;
