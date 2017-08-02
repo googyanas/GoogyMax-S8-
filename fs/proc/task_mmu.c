@@ -391,9 +391,8 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 			goto done;
 		}
 
-		if (is_stack(priv, vma, is_pid))
+		if (is_stack(priv, vma, is_pid)) {
 			name = "[stack]";
-			}
 			goto done;
 		}
 

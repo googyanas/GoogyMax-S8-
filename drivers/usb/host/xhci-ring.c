@@ -744,6 +744,7 @@ static void xhci_handle_cmd_stop_ep(struct xhci_hcd *xhci, int slot_id,
 	struct list_head *entry;
 	struct xhci_td *cur_td = NULL;
 	struct xhci_td *last_unlinked_td;
+    unsigned long flags;
 
 	struct xhci_dequeue_state deq_state;
 
