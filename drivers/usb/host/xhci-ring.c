@@ -1464,12 +1464,6 @@ static void handle_cmd_completion(struct xhci_hcd *xhci,
 
 	cmd = list_entry(xhci->cmd_list.next, struct xhci_command, cmd_list);
 
-	if (cmd->command_trb != xhci->cmd_ring->dequeue) {
-		xhci_err(xhci,
-			 "Command completion event does not match command\n");
-		return;
-	}
-
 #if defined(CONFIG_USB_HOST_SAMSUNG_FEATURE)
 	cancel_delayed_work(&xhci->cmd_timer);
 #else
@@ -1489,6 +1483,13 @@ static void handle_cmd_completion(struct xhci_hcd *xhci,
 #endif
 		return;
 	}
+
+	if (cmd->command_trb != xhci->cmd_ring->dequeue) {
+		xhci_err(xhci,
+			 "Command completion event does not match command\n");
+		return;
+	}
+
 	/*
 	 * Host aborted the command ring, check if the current command was
 	 * supposed to be aborted, otherwise continue normally.
@@ -3720,7 +3721,7 @@ static unsigned int xhci_get_burst_count(struct xhci_hcd *xhci,
 {
 	unsigned int max_burst;
 
-	if (xhci->hci_version < 0x100 || udev->speed != USB_SPEED_SUPER)
+	if (xhci->hci_version < 0x100 || udev->speed < USB_SPEED_SUPER)
 		return 0;
 
 	max_burst = urb->ep->ss_ep_comp.bMaxBurst;
@@ -3746,6 +3747,7 @@ static unsigned int xhci_get_last_burst_packet_count(struct xhci_hcd *xhci,
 		return 0;
 
 	switch (udev->speed) {
+	case USB_SPEED_SUPER_PLUS:
 	case USB_SPEED_SUPER:
 		/* bMaxBurst is zero based: 0 means 1 packet per burst */
 		max_burst = urb->ep->ss_ep_comp.bMaxBurst;
