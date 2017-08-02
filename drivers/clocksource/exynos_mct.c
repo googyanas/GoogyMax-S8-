@@ -482,6 +482,7 @@ static int exynos4_mct_hardlockup_handler(struct notifier_block *nb,
 
 static int exynos4_local_timer_setup(struct mct_clock_event_device *mevt)
 {
+		exynos4_mct_write(0x1, mevt->base + MCT_L_INT_CSTAT_OFFSET);
 	struct clock_event_device *evt = &mevt->evt;
 	unsigned int cpu = smp_processor_id();
 
