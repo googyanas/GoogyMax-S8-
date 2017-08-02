@@ -1515,7 +1515,9 @@ static int samsung_i2s_dai_remove(struct snd_soc_dai *dai)
 	if (!other || !other->clk) {
 
 		if (i2s->quirks & QUIRK_NEED_RSTCLR)
+			spin_lock_irqsave(i2s->lock, flags);
 			writel(0, i2s->addr + I2SCON);
+			spin_unlock_irqrestore(i2s->lock, flags);
 
 		clk_put(i2s->clk);
 		clk_put(i2s->opclk0);

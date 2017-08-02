@@ -408,16 +408,30 @@ static int xhci_abort_cmd_ring(struct xhci_hcd *xhci)
 	} else {
 		xhci_handle_stopped_cmd_ring(xhci, xhci_next_queued_cmd(xhci));
 #else
-		if (ret == 0)
-			return 0;
-
-		xhci_err(xhci, "Stopped the command ring failed, "
-				"maybe the host is dead\n");
-		del_timer(&xhci->cmd_timer);
-		xhci->xhc_state |= XHCI_STATE_DYING;
-		xhci_quiesce(xhci);
-		xhci_halt(xhci);
-		return -ESHUTDOWN;
+		if (ret < 0) {
+			xhci_err(xhci, "Stopped the command ring failed, "
+				 "maybe the host is dead\n");
+			xhci->xhc_state |= XHCI_STATE_DYING;
+			xhci_quiesce(xhci);
+			xhci_halt(xhci);
+			return -ESHUTDOWN;
+		}
+	}
+	/*
+	 * Writing the CMD_RING_ABORT bit should cause a cmd completion event,
+	 * however on some host hw the CMD_RING_RUNNING bit is correctly cleared
+	 * but the completion event in never sent. Wait 2 secs (arbitrary
+	 * number) to handle those cases after negation of CMD_RING_RUNNING.
+	 */
+	spin_unlock_irqrestore(&xhci->lock, flags);
+	ret = wait_for_completion_timeout(&xhci->cmd_ring_stop_completion,
+					  msecs_to_jiffies(2000));
+	spin_lock_irqsave(&xhci->lock, flags);
+	if (!ret) {
+		xhci_dbg(xhci, "No stop event for abort, ring start fail?\n");
+		xhci_cleanup_command_queue(xhci);
+	} else {
+		xhci_handle_stopped_cmd_ring(xhci, xhci_next_queued_cmd(xhci));
 #endif
 	}
 
@@ -1472,7 +1486,7 @@ static void handle_cmd_completion(struct xhci_hcd *xhci,
 #if defined(CONFIG_USB_HOST_SAMSUNG_FEATURE)
 	cancel_delayed_work(&xhci->cmd_timer);
 #else
-	del_timer(&xhci->cmd_timer);
+	cancel_delayed_work(&xhci->cmd_timer);
 #endif
 
 	trace_xhci_cmd_completion(cmd_trb, (struct xhci_generic_trb *) event);
@@ -1484,7 +1498,7 @@ static void handle_cmd_completion(struct xhci_hcd *xhci,
 #if defined(CONFIG_USB_HOST_SAMSUNG_FEATURE)
 		complete_all(&xhci->cmd_ring_stop_completion);
 #else
-		xhci_handle_stopped_cmd_ring(xhci, cmd);
+		complete_all(&xhci->cmd_ring_stop_completion);
 #endif
 		return;
 	}
@@ -1503,8 +1517,11 @@ static void handle_cmd_completion(struct xhci_hcd *xhci,
 	 */
 	if (cmd_comp_code == COMP_CMD_ABORT) {
 		xhci->cmd_ring_state = CMD_RING_STATE_STOPPED;
-		if (cmd->status == COMP_CMD_ABORT)
+		if (cmd->status == COMP_CMD_ABORT) {
+			if (xhci->current_cmd == cmd)
+				xhci->current_cmd = NULL;
 			goto event_handled;
+		}
 	}
 
 	cmd_type = TRB_FIELD_TO_TYPE(le32_to_cpu(cmd_trb->generic.field[3]));
@@ -1568,7 +1585,9 @@ static void handle_cmd_completion(struct xhci_hcd *xhci,
 #if defined(CONFIG_USB_HOST_SAMSUNG_FEATURE)
 		xhci_mod_cmd_timer(xhci, XHCI_CMD_DEFAULT_TIMEOUT);
 #else
-		mod_timer(&xhci->cmd_timer, jiffies + XHCI_CMD_DEFAULT_TIMEOUT);
+		xhci_mod_cmd_timer(xhci, XHCI_CMD_DEFAULT_TIMEOUT);
+	} else if (xhci->current_cmd == cmd) {
+		xhci->current_cmd = NULL;
 #endif
 	}
 
