@@ -1491,12 +1491,10 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
 	dbg("s3c24xx_serial_init_port: port=%p, platdev=%p\n", port, platdev);
 
 	if (platdev == NULL)
-		ret = -ENODEV;
-        goto err;
+		return -ENODEV;
 
 	if (port->mapbase != 0)
-		ret = -EINVAL;
-        goto err;
+		return 0;
 
 	/* setup info for port */
 	port->dev	= &platdev->dev;
@@ -1518,8 +1516,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
 	res = platform_get_resource(platdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		dev_err(port->dev, "failed to find memory resource for uart\n");
-		ret = -EINVAL;
-        goto err;
+		return -EINVAL;
 	}
 
 	dbg("resource %pR)\n", res);
@@ -1559,8 +1556,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
 	if (IS_ERR(ourport->clk)) {
 		pr_err("%s: Controller clock not found\n",
 				dev_name(&platdev->dev));
-		ret = PTR_ERR(ourport->clk);
-        goto err;
+		return PTR_ERR(ourport->clk);
 	}
 
 	if (ourport->check_separated_clk) {
@@ -1569,21 +1565,20 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
 		if (IS_ERR(ourport->separated_clk)) {
 			pr_err("%s: Controller clock not found\n",
 					dev_name(&platdev->dev));
-			ret = PTR_ERR(ourport->separated_clk);
-            goto err;
+			return PTR_ERR(ourport->separated_clk);
 		}
 
 		ret = clk_prepare_enable(ourport->separated_clk);
 		if (ret) {
 			pr_err("uart: clock failed to prepare+enable: %d\n", ret);
-			goto err;
+			return ret;
 		}
 	}
 
 	ret = clk_prepare_enable(ourport->clk);
 	if (ret) {
 		pr_err("uart: clock failed to prepare+enable: %d\n", ret);
-		goto err;
+		return ret;
 	}
 
 	/* Keep all interrupts masked and cleared */
@@ -1599,12 +1594,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
 
 	/* reset the fifos (and setup the uart) */
 	s3c24xx_serial_resetport(port, cfg);
-
 	return 0;
-
-err:
-	port->mapbase = 0;
-	return ret;
 }
 
 #ifdef CONFIG_SAMSUNG_CLOCK
