@@ -213,6 +213,8 @@ static int xhci_plat_probe(struct platform_device *pdev)
 			dev_name(&pdev->dev), hcd);
 	if (!xhci->shared_hcd) {
 		ret = -ENOMEM;
+	xhci->xhc_state |= XHCI_STATE_REMOVING;
+
 		goto disable_clk;
 	}
 
