@@ -2268,6 +2268,7 @@ int ext4_process_policy(const struct ext4_encryption_policy *policy,
 			struct inode *inode);
 int ext4_get_policy(struct inode *inode,
 		    struct ext4_encryption_policy *policy);
+extern const struct dentry_operations ext4_encrypted_d_ops;
 
 /* crypto.c */
 extern struct kmem_cache *ext4_crypt_info_cachep;
