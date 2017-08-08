@@ -407,7 +407,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security \
 		   -Werror \
 		   -std=gnu89 $(call cc-option,-fno-PIE) \
-		   -Wno-misleading-indentation -Wno-logical-not-parentheses -Wno-array-bounds -Wno-tautological-compare -Wno-bool-compare -Wno-switch-bool -Wno-unused-variable
+		   -Wno-misleading-indentation -Wno-logical-not-parentheses -Wno-array-bounds -Wno-tautological-compare -Wno-bool-compare -Wno-switch-bool -Wno-unused-variable \
+		   -mtune=exynos-m1 -Wno-memset-elt-size -Wno-bool-operation -Wno-pointer-compare
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=

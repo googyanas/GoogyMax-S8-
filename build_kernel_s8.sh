@@ -1,15 +1,13 @@
 #!/bin/sh
-export CROSS_COMPILE=/usr/bin/aarch64-linux-gnu-
-# export CROSS_COMPILE=/home/anas/S8/sabermod/bin/aarch64-
-export KCONFIG_NOTIMESTAMP=true
+# export CROSS_COMPILE=/usr/bin/aarch64-linux-gnu-
+export CROSS_COMPILE=/home/anas/S8/linaro711/bin/aarch64-linux-gnu-
+# export KCONFIG_NOTIMESTAMP=true
 export ARCH=arm64
 export SUBARCH=arm64
 
 VER="\"-GoogyMax-S8_N_v$1\""
 cp -f /home/anas/S8/Kernel/arch/arm64/configs/googymax-s8_defconfig /home/anas/S8/googymax-s8_defconfig
 sed "s#^CONFIG_LOCALVERSION=.*#CONFIG_LOCALVERSION=$VER#" /home/anas/S8/googymax-s8_defconfig > /home/anas/S8/Kernel/arch/arm64/configs/googymax-s8_defconfig
-
-find -name '*.ko' -exec rm -rf {} \;
 
 rm -f /home/anas/S8/Kernel/arch/arm64/boot/Image*.*
 rm -f /home/anas/S8/Kernel/arch/arm64/boot/.Image*.*
