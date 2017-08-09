@@ -64,7 +64,7 @@ int muic_i2c_read_byte(const struct i2c_client *client, u8 command)
 		retry ++;
 	}
 #ifdef DEBUG_MUIC
-	muic_reg_log(command, ret, retry << 1| READ);
+	muic_reg_log(command, ret, retry << 1| READ_MUIC);
 #endif
 	return ret;
 }
@@ -91,7 +91,7 @@ int muic_i2c_write_byte(const struct i2c_client *client,
 		retry ++;
 	}
 #ifdef DEBUG_MUIC
-	muic_reg_log(command, value, retry << 1| WRITE);
+	muic_reg_log(command, value, retry << 1| WRITE_MUIC);
 #endif
 	return ret;
 }
