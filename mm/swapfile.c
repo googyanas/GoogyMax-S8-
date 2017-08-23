@@ -1029,8 +1029,7 @@ int free_swap_and_cache(swp_entry_t entry)
 		 * Not mapped elsewhere, or swap space full? Free it!
 		 * Also recheck PageSwapCache now page is locked (above).
 		 */
-				(!page_mapped(page) ||
-				vm_swap_full(page_swap_info(page)))) {
+		if (PageSwapCache(page) && !PageWriteback(page) &&
 				(!page_mapped(page) || vm_swap_full())) {
 			delete_from_swap_cache(page);
 			SetPageDirty(page);
