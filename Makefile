@@ -408,8 +408,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror \
 		   -std=gnu89 $(call cc-option,-fno-PIE) \
 		   -Wno-misleading-indentation -Wno-logical-not-parentheses -Wno-array-bounds -Wno-tautological-compare -Wno-bool-compare -Wno-switch-bool -Wno-unused-variable \
-		   -mtune=cortex-a73.cortex-a53 -Wno-memset-elt-size -Wno-bool-operation -Wno-pointer-compare \
-		   $(call cc-option,-unaligned-access) $(call cc-option,-neon-for-64bits)
+		   -Wno-memset-elt-size -Wno-bool-operation -Wno-pointer-compare
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=

@@ -5,9 +5,9 @@ export KCONFIG_NOTIMESTAMP=true
 export ARCH=arm64
 export SUBARCH=arm64
 
-VER="\"-GoogyMax-S8_N_v$1\""
-cp -f /home/anas/S8/Kernel/arch/arm64/configs/googymax-s8_defconfig /home/anas/S8/googymax-s8_defconfig
-sed "s#^CONFIG_LOCALVERSION=.*#CONFIG_LOCALVERSION=$VER#" /home/anas/S8/googymax-s8_defconfig > /home/anas/S8/Kernel/arch/arm64/configs/googymax-s8_defconfig
+VER="\"-GoogyMax-S8+_N_v$1\""
+cp -f /home/anas/S8/Kernel/arch/arm64/configs/googymax-s8+_defconfig /home/anas/S8/googymax-s8+_defconfig
+sed "s#^CONFIG_LOCALVERSION=.*#CONFIG_LOCALVERSION=$VER#" /home/anas/S8/googymax-s8+_defconfig > /home/anas/S8/Kernel/arch/arm64/configs/googymax-s8+_defconfig
 
 rm -f /home/anas/S8/Kernel/arch/arm64/boot/dts/exynos/*.dtb
 rm -f /home/anas/S8/Kernel/arch/arm64/boot/Image*.*
@@ -24,11 +24,11 @@ cd /home/anas/S8/Out
 echo SEANDROIDENFORCE >> /home/anas/S8/Release/boot.img
 
 cd /home/anas/S8/Release
-rm -f /home/anas/S8/GoogyMax-S8_Kernel_N_v${1}.zip
-zip -r ../GoogyMax-S8_Kernel_N_v${1}.zip .
+rm -f /home/anas/S8/GoogyMax-S8+_Kernel_N_v${1}.zip
+zip -r ../GoogyMax-S8+_Kernel_N_v${1}.zip .
 
-adb push /home/anas/S8/GoogyMax-S8_Kernel_N_v${1}.zip /sdcard/GoogyMax-S8_Kernel_N_v${1}.zip
+adb push /home/anas/S8/GoogyMax-S8+_Kernel_N_v${1}.zip /sdcard/GoogyMax-S8+_Kernel_N_v${1}.zip
 
 adb kill-server
 
-echo "GoogyMax-S8_Kernel_N_v${1}.zip READY !"
+echo "GoogyMax-S8+_Kernel_N_v${1}.zip READY !"
