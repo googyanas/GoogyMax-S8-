@@ -1,6 +1,6 @@
 #!/bin/sh
-# export CROSS_COMPILE=/usr/bin/aarch64-linux-gnu-
-export CROSS_COMPILE=/home/anas/S8/linaro711/bin/aarch64-linux-gnu-
+export CROSS_COMPILE=/usr/bin/aarch64-linux-gnu-
+# export CROSS_COMPILE=/home/anas/S8/linaro711/bin/aarch64-linux-gnu-
 export KCONFIG_NOTIMESTAMP=true
 export ARCH=arm64
 export SUBARCH=arm64
