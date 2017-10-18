@@ -3527,9 +3527,9 @@ static int decon_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_pinctrl;
 
-	ret = decon_create_debugfs(decon);
-	if (ret)
-		goto err_pinctrl;
+// 	ret = decon_create_debugfs(decon);
+// 	if (ret)
+// 		goto err_pinctrl;
 
 #ifdef CONFIG_DECON_HIBER
 	ret = decon_register_hiber_work(decon);
@@ -3590,7 +3590,7 @@ err_display:
 err_win:
 	decon_unregister_subdevs(decon);
 err_subdev:
-	decon_destroy_debugfs(decon);
+// 	decon_destroy_debugfs(decon);
 err_pinctrl:
 	decon_destroy_psr_info(decon);
 err_psr:
