@@ -1652,6 +1652,11 @@ static int fanout_add(struct sock *sk, u16 id, u16 type_flags)
 
 	mutex_lock(&fanout_mutex);
 
+	err = -EINVAL;
+ 	if (!po->running)
+		return -EINVAL;
+		goto out;
+
 	err = -EALREADY;
 	if (po->fanout)
 		goto out;
