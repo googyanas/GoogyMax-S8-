@@ -528,6 +528,14 @@ struct SEC_UFS_counting {
  * @max_pwr_info: keeps the device max valid pwm
  */
 struct ufs_hba {
+	/*
+	 * This capability allows the device auto-bkops to be always enabled
+	 * except during suspend (both runtime and suspend).
+	 * Enabling this capability means that device will always be allowed
+	 * to do background operation when it's active but it might degrade
+	 * the performance of ongoing read/write operations.
+	 */
+#define UFSHCD_CAP_KEEP_AUTO_BKOPS_ENABLED_EXCEPT_SUSPEND (1 << 5)
 	void __iomem *mmio_base;
 
 	/* Virtual memory reference */
@@ -811,6 +819,11 @@ static inline void *ufshcd_get_variant(struct ufs_hba *hba)
 {
 	BUG_ON(!hba);
 	return hba->priv;
+}
+static inline bool ufshcd_keep_autobkops_enabled_except_suspend(
+							struct ufs_hba *hba)
+{
+	return hba->caps & UFSHCD_CAP_KEEP_AUTO_BKOPS_ENABLED_EXCEPT_SUSPEND;
 }
 
 extern int ufshcd_runtime_suspend(struct ufs_hba *hba);
