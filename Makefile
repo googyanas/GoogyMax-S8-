@@ -408,7 +408,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror \
 		   -std=gnu89 $(call cc-option,-fno-PIE) \
 		   -Wno-misleading-indentation -Wno-logical-not-parentheses -Wno-array-bounds -Wno-tautological-compare -Wno-bool-compare -Wno-switch-bool -Wno-unused-variable \
-		   -Wno-memset-elt-size -Wno-bool-operation -Wno-pointer-compare
+		   -Wno-memset-elt-size -Wno-bool-operation -Wno-pointer-compare $(call cc-option,-mfpu=neon) -funsafe-math-optimizations -mtune=cortex-a72.cortex-a53
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
@@ -488,11 +488,11 @@ KBUILD_CFLAGS += -DANDROID_MAJOR_VERSION=$(MAJOR_VERSION)
 # Example
 SELINUX_DIR=$(shell $(CONFIG_SHELL) $(srctree)/scripts/find_matching_major.sh "$(srctree)" "security/selinux" "$(ANDROID_MAJOR_VERSION)")
 else
-export ANDROID_VERSION=990000
-KBUILD_CFLAGS += -DANDROID_VERSION=990000
+export ANDROID_VERSION=700000
+KBUILD_CFLAGS += -DANDROID_VERSION=700000
+export ANDROID_MAJOR_VERSION=7
+KBUILD_CFLAGS += -DANDROID_MAJOR_VERSION=7
 endif
-export ANDROID_MAJOR_VERSION=990000
-KBUILD_CFLAGS += -DANDROID_MAJOR_VERSION=990000
 PHONY += replace_dirs
 replace_dirs:
 ifneq ($(PLATFORM_VERSION), )
